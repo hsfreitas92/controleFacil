@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import './networks.css'
 
-import { Header } from '../../components/Header'
+import { Nav } from '../../components/Nav'
 import { Input } from '../../components/Input'
 import { MdAddLink } from 'react-icons/md'
 
@@ -58,7 +58,7 @@ export default function Networks() {
 
   return (
     <div className='admin-container'>
-      <Header />
+      <Nav />
 
       <h1 className='title-social'>Suas redes sociais</h1>
 

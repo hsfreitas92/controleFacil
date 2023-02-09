@@ -29,7 +29,8 @@ export default function Login() {
         toast.success('Bem vindo de volta!')
         navigate('/admin', { replace: true })
       })
-      .catch(() => {
+      .catch((error) => {
+        console.log('Erro ao registrar: ' + error)
         toast.error('Erro ao tentar fazer login!')
       })
   }

@@ -1,4 +1,4 @@
-import './header.css'
+import './nav.css'
 
 import { BiLogOut } from 'react-icons/bi'
 import { Link } from 'react-router-dom'
@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom'
 import { auth } from '../../services/firebaseConnection'
 import { signOut } from 'firebase/auth'
 
-export function Header(){
+export function Nav(){
   async function handleLogout(){
     await signOut(auth)
   }
