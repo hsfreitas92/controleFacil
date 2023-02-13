@@ -1,4 +1,5 @@
 import { HomeStyle } from "./home";
+import { Nav } from '../../components/Nav'
 import { useState } from 'react'
 import Modal from 'react-modal';
 import { Dashboard } from "../../components/Dashboard";
@@ -21,6 +22,7 @@ export default function Home() {
 
   return (
     <TransactionProvider>
+      <Nav />
       <Header onOpenNewTransactionModal={handleOpenNewTransactionModal} />
       <Dashboard />
       <NewTransactionModal 

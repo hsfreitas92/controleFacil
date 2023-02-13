@@ -1,82 +1,62 @@
 import { createContext, useEffect, useState, useContext } from 'react';
 import { toast } from 'react-toastify';
-
-import { db } from '../services/firebaseConnection'
-import {
-  addDoc,
-  getDocs,
-  collection,
-  orderBy,
-  query,
-  doc,
-  getDoc,
-  deleteDoc
-} from 'firebase/firestore'
+import { api } from '../services/api';
 
 export const TransactionsContext = createContext();
 
 export function TransactionProvider({ children }) {
   const [transactions, setTransactions] = useState([])
 
-  async function loadTransactions() {
-    const transactionsRef = collection(db, 'transactions')
-    const queryRef = query(transactionsRef, orderBy('createdAt', 'asc'))
-    getDocs(queryRef)
-      .then((snapshot) => {
-        let lista = []
+  useEffect(() => {
+    getTransactions()
+  }, []);
 
-        snapshot.forEach((doc) => {
-          lista.push({
-            id: doc.id,
-            title: doc.data().title,
-            type: doc.data().type,
-            amount: doc.data().amount,
-            category: doc.data().category,
-            createdAt: doc.data().createdAt
-          })
-        })
-        setTransactions(lista);
-      })
+  async function getTransactions() {
+    api.get('/transactions')
+      .then(response => setTransactions(response.data))
       .catch((error) => {
         console.log('Erro ao carregar transações: ' + error)
-        toast.error('Ops, erro ao carregar o transações!')
+        toast.error('Ops, erro ao carregar transações!')
       })
   }
 
   async function createTransaction(transactionInput) {
-    addDoc(collection(db, 'transactions'), {
-      title: transactionInput.title,
-      type: transactionInput.type,
-      amount: transactionInput.amount,
-      category: transactionInput.category,
-      createdAt: Date.now(),
-    })
-      .then(() => {
-        loadTransactions()
-        toast.success('Transação registrada com sucesso!')
+    try {
+      await api.post('/transactions', {
+        ...transactionInput,
+        createdAt: new Date(),
       })
-      .catch((error) => {
-        console.log('Erro ao registrar transação: ' + error)
-        toast.error('Ops, erro ao salvar o link!')
-      })
+
+      getTransactions()
+    } catch {
+      toast.error('Erro na adição da transação');
+    }
   }
 
   async function removeTransaction(transactionId) {
-    const docRef = doc(db, 'transactions', transactionId)
-    await deleteDoc(docRef)
-      .then(() => {
-        loadTransactions();
-        toast.success('Transação removida com succeso!')
-      })
-      .catch((error) => {
-        console.log('Erro ao remover transação: ' + error)
-        toast.error('Ops, erro na remoção da transação!')
-      })
+    try {
+      const updatedTransaction = [...transactions];
+      const transactionIndex = updatedTransaction.findIndex(transaction => transaction.id === transactionId);
+  
+      if (transactionIndex < 0) {
+        throw new Error('Transação nao encontrada!');
+      }
+  
+      updatedTransaction.splice(transactionIndex, 1);
+  
+      const response = await api.delete(`/transactions/${transactionId}`);
+  
+      if (!response.data) {
+        throw new Error(response.data.message || response.status);
+      }
+  
+      setTransactions(updatedTransaction);
+      toast.success('Transação removida com sucesso!');
+    } catch (error) {
+      console.error(error);
+      toast.error('Erro na remoção da transação');
+    }
   }
-
-  useEffect(() => {
-    loadTransactions();
-  }, [])
 
   return (
     <TransactionsContext.Provider value={{ transactions, createTransaction, removeTransaction }}>

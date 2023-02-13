@@ -1,6 +1,6 @@
 import './admin.css'
 
-import { Header } from '../../components/Header'
+import { Nav } from '../../components/Nav'
 import { Logo } from '../../components/Logo'
 import { Input } from '../../components/Input'
 
@@ -85,7 +85,7 @@ export default function Admin() {
 
   return (
     <div className='admin-container'>
-      <Header />
+      <Nav />
       <Logo />
 
       <form className='form' onSubmit={handleRegister}>

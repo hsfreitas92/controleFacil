@@ -26,8 +26,8 @@ export default function Login() {
 
     signInWithEmailAndPassword(auth, email, password)
       .then(() => {
-        toast.success('Bem vindo de volta!')
-        navigate('/admin', { replace: true })
+        toast.success('Bem vindo!')
+        navigate('/', { replace: true })
       })
       .catch((error) => {
         console.log('Erro ao registrar: ' + error)
